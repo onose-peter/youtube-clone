@@ -4,6 +4,7 @@ import SideVideo from "./Sections/SideVideo";
 import Subscriber from './Sections/Subscriber';
 import axios from "axios";
 import Comments from './Sections/Comments'
+import LikeDislikes from "./Sections/LikeDislikes";
 
 function DetailVideoPage(props) {
   const videoId = props.match.params.videoId;
@@ -23,6 +24,18 @@ function DetailVideoPage(props) {
         alert("Failed to get video Info");
       }
     });
+
+    axios.post('/api/comment/getComments', videoVariable)
+      .then(response => {
+        if (response.data.success) {
+            console.log(response.data.comments)
+            setCommentLists(response.data.comments)
+          } else {
+            alert('Failed to get video Info')
+          }
+      })
+
+
   }, []);
 
   const updateComment = (newComment) => {
@@ -47,7 +60,10 @@ function DetailVideoPage(props) {
           ></video>
 
           <List.Item 
-          actions={[ <Subscriber userTo={Video.writer._id} userFrom={localStorage.getItem
+          actions={[
+            <LikeDislikes video videoId={videoId} userId={localStorage.getItem('userId')} />,
+            
+             <Subscriber userTo={Video.writer._id} userFrom={localStorage.getItem
           ('userId')} /> ]}
           >
             <List.Item.Meta
